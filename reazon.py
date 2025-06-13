@@ -9,16 +9,17 @@ audio = audio_from_path(
 )
 model = load_model()
 ret = transcribe(model, audio)
-# ret_dict = {
-#     "text": ret.text,
-#     "segments": [asdict(seg) for seg in ret.segments],
-#     "subwords": [asdict(sw) for sw in ret.subwords],
-#     "hypothesis": (
-#         ret.hypothesis
-#         if isinstance(ret.hypothesis, (str, dict, list, int, float, type(None)))
-#         else None
-#     ),
-# }
+# asdict で変換
+result = asdict(ret)
+
+# segmentのstart/end変換と丸め
+for seg in result.get("segments", []):
+    seg["start"] = round(seg.pop("start_seconds"), 3)
+    seg["end"] = round(seg.pop("end_seconds"), 3)
+
+# 保存
+with open("data/text/dcdd979f47cb788aeb8ef58033d37fff_nemo.json", "w", encoding="utf-8") as f:
+    json.dump(result, f, ensure_ascii=False, indent=2)
 
 # # 保存
 # output_path = Path(
@@ -31,23 +32,23 @@ ret = transcribe(model, audio)
 # print("✅ Saved:", output_path)
 
 # フォーマット整形（1行ずつ書き出す）
-out_path = Path("data/text/dcdd979f47cb788aeb8ef58033d37fff_nemo.json")
-out_path.parent.mkdir(parents=True, exist_ok=True)
-with out_path.open("w", encoding="utf-8") as f:
-    f.write("[\n")
-    for i, sw in enumerate(ret.subwords):
-        obj = {
-            # "speaker": getattr(sw, "speaker", "A"),
-            "word": sw.token,
-            "start": sw.start,
-            "end": sw.end,
-        }
-        json_str = json.dumps(obj, ensure_ascii=False)
-        f.write(f"  {json_str}")
-        if i != len(ret.subwords) - 1:
-            f.write(",\n")
-        else:
-            f.write("\n")
-    f.write("]\n")
+# out_path = Path("data/text/dcdd979f47cb788aeb8ef58033d37fff_nemo.json")
+# out_path.parent.mkdir(parents=True, exist_ok=True)
+# with out_path.open("w", encoding="utf-8") as f:
+#     f.write("[\n")
+#     for i, sw in enumerate(ret.subwords):
+#         obj = {
+#             # "speaker": getattr(sw, "speaker", "A"),
+#             "text": sw.token,
+#             # "start": sw.start,
+#             # "end": sw.end,
+#         }
+#         json_str = json.dumps(obj, ensure_ascii=False)
+#         f.write(f"  {json_str}")
+#         if i != len(ret.subwords) - 1:
+#             f.write(",\n")
+#         else:
+#             f.write("\n")
+#     f.write("]\n")
 
-print("✅ Saved:", out_path)
+# print("✅ Saved:", out_path)
