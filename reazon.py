@@ -31,7 +31,7 @@ ret = transcribe(model, audio)
 # print("✅ Saved:", output_path)
 
 # フォーマット整形（1行ずつ書き出す）
-out_path = Path("data/J-CHAT/text/dcdd979f47cb788aeb8ef58033d37fff.json")
+out_path = Path("data/text/dcdd979f47cb788aeb8ef58033d37fff_nemo.json")
 out_path.parent.mkdir(parents=True, exist_ok=True)
 with out_path.open("w", encoding="utf-8") as f:
     f.write("[\n")
