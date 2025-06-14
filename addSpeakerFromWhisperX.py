@@ -1,3 +1,6 @@
+import json
+
+
 def merge_subwords_from_chars(subwords, char_words):
     """
     subwords の token を構成する char_words を順に対応づけて
@@ -37,8 +40,6 @@ def merge_subwords_from_chars(subwords, char_words):
     return result
 
 
-import json
-
 # JSONファイルの読み込み
 with open(
     "/mnt/kiso-qnap3/yuabe/m1/useReazonSpeech/data/text/dcdd979f47cb788aeb8ef58033d37fff_nemo.json",
@@ -57,6 +58,13 @@ with open(
 # マージ実行
 merged_subwords = merge_subwords_from_chars(json_data["subwords"], word_timings)
 
-# 保存する場合
+# 出力ファイルに JSON 配列形式で書き出し
 with open("data/text/merged_subwords.json", "w", encoding="utf-8") as f:
-    json.dump(merged_subwords, f, ensure_ascii=False, indent=2)
+    f.write("[\n")
+    for i, item in enumerate(merged_subwords):
+        line = json.dumps(item, ensure_ascii=False)
+        if i < len(merged_subwords) - 1:
+            f.write("   " + f"{line},\n")
+        else:
+            f.write("   " + f"{line}\n")
+    f.write("]\n")
